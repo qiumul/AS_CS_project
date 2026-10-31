@@ -6,4 +6,5 @@ venv/
 .env.*
 .vscode/
 .idea/
+my_tasks.json
 
