@@ -3,11 +3,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-
-"""
-def display_dashboard(sorted_task_list):
-"""
-# Added: Accept the task-operation callback.
+# Accept the task-operation callback.
 def display_dashboard(sorted_task_list, on_action=None):
     """Open a graphical dashboard containing tasks in priority order.
 
@@ -47,7 +43,7 @@ def display_dashboard(sorted_task_list, on_action=None):
     )
     style.map("Task.Treeview", background=[("selected", "#DCE8FF")])
 
-    # Added: Give invalid input fields a red border and a light red background.
+    # Give invalid input fields a red border and a light red background.
     style.map(
         "Task.TEntry",
         bordercolor=[("invalid", "#DC2626")],
@@ -66,17 +62,7 @@ def display_dashboard(sorted_task_list, on_action=None):
         fg="#FFFFFF",
         font=("Arial", 22, "bold"),
     ).pack(anchor="w")
-    """
-    tk.Label(
-        header,
-        text=f"{len(sorted_task_list)} task(s) in your current schedule",
-        bg="#172554",
-        fg="#BFDBFE",
-        font=("Arial", 11),
-    ).pack(anchor="w", pady=(6, 0))
-
-    """
-    # Added: Keep the label so the task count can be updated.
+    # Keep the label so the task count can be updated.
     count_label = tk.Label(
         header,
         text=f"{len(sorted_task_list)} task(s) in your current schedule",
@@ -89,16 +75,16 @@ def display_dashboard(sorted_task_list, on_action=None):
     content = tk.Frame(window, bg="#F3F6FA", padx=32, pady=28)
     content.pack(fill="both", expand=True)
 
-    # Added: Keep the selected ID and input widgets.
+    # Keep the selected ID and input widgets.
     selected_id = None
     fields = {}
     entries = {}
     buttons = {}
 
-    # Added: Fill the form for a selected task, or clear it when selection is cancelled.
+    # Fill the form for a selected task, or clear it when selection is cancelled.
     def select_task(task_id):
         nonlocal selected_id
-        # Added: Clicking blank table space clears the selection.
+        # Clicking blank table space clears the selection.
         if task_id is None:
             selected_id = None
             for field, variable in fields.items():
@@ -117,7 +103,7 @@ def display_dashboard(sorted_task_list, on_action=None):
         buttons["Delete selected"].configure(state="normal")
         status_message.set(f"Selected task #{task_id}. Change the fields and click Edit selected.")
 
-    # Added: Send button actions and display the returned result.
+    # Send button actions and display the returned result.
     def submit_task(command):
         nonlocal selected_id
         if command != "ADD" and selected_id is None:
@@ -125,13 +111,13 @@ def display_dashboard(sorted_task_list, on_action=None):
             return
         data = {field: variable.get() for field, variable in fields.items()}
         data["id"] = selected_id
-        # Added: Clear previous field highlights before checking the current input.
+        # Clear previous field highlights before checking the current input.
         for entry in entries.values():
             entry.state(["!invalid"])
         success, message, invalid_field = on_action(command, data)
         status_message.set(message)
         if not success:
-            # Added: Highlight the field rejected by the input check.
+            # Highlight the field rejected by the input check.
             entries[invalid_field].state(["invalid"])
             entries[invalid_field].focus_set()
             return
@@ -142,14 +128,13 @@ def display_dashboard(sorted_task_list, on_action=None):
         buttons["Edit selected"].configure(state="disabled")
         buttons["Delete selected"].configure(state="disabled")
 
-    # Added: Reuse the code after each task operation.
+    # Reuse the code after each task operation.
     def refresh():
         """Update the task count and redraw the original task display."""
-        # Added: Update the count and remove the previous display.
+        # Update the count and remove the previous display.
         count_label.configure(text=f"{len(sorted_task_list)} task(s) in your current schedule")
         for child in content.winfo_children():
             child.destroy()
-        # Changed: The original empty-state and table code below is moved into refresh().
         # Selection handles an empty collection without attempting table output.
         if len(sorted_task_list) == 0:
             empty_panel = tk.Frame(
@@ -240,13 +225,7 @@ def display_dashboard(sorted_task_list, on_action=None):
                 status = ""
                 row_tag = "standard"
 
-                """
-                # Module 2 places the highest-priority task at index zero.
-                if index == 0:
-                    status = "● URGENT"
-                    row_tag = "urgent"
-                """
-                # Added: Show overdue tasks separately; tasks due within three days are urgent.
+                # Show overdue tasks separately; tasks due within three days are urgent.
                 if task["deadline_days"] < 0:
                     status = "● OVERDUE"
                     row_tag = "urgent"
@@ -257,7 +236,7 @@ def display_dashboard(sorted_task_list, on_action=None):
                 task_table.insert(
                     "",
                     "end",
-                    # Added: Identify the selected task by its ID.
+                    # Identify the selected task by its ID.
                     iid=str(task["id"]) if on_action is not None else str(index),
                     values=(
                         index + 1,
@@ -276,14 +255,14 @@ def display_dashboard(sorted_task_list, on_action=None):
             scrollbar.pack(side="right", fill="y")
             task_table.pack(side="left", fill="both", expand=True)
 
-            # Added: Let the input controls know which task the user selected.
+            # Let the input controls know which task the user selected.
             if on_action is not None:
                 task_table.bind(
                     "<<TreeviewSelect>>",
                     lambda event: select_task(int(task_table.selection()[0]))
                     if task_table.selection() else None,
                 )
-                # Added: Cancel selection when clicking blank space.
+                # Cancel selection when clicking blank space.
                 task_table.bind(
                     "<Button-1>",
                     lambda event: (
@@ -294,14 +273,14 @@ def display_dashboard(sorted_task_list, on_action=None):
                     and selected_id is not None else None,
                 )
 
-    # Added: Create input controls when supplied an operation callback.
+    # Create input controls when supplied an operation callback.
     if on_action is not None:
         window.geometry("1100x740")
         window.minsize(1100, 640)
         status_message = tk.StringVar(window, "Enter a new task, or select a row to edit or delete.")
         panel = tk.Frame(window, bg="#F3F6FA", padx=32, pady=14)
         panel.pack(fill="x", before=content)
-        # Added: Create the four task input fields.
+        # Create the four task input fields.
         for column, (field, label) in enumerate((("name", "Task name"),
                 ("deadline_date", "Deadline YYYY-MM-DD"), ("duration", "Duration in hours"),
                 ("difficulty", "Difficulty 1-5"))):
@@ -313,7 +292,7 @@ def display_dashboard(sorted_task_list, on_action=None):
             entries[field] = entry
             panel.columnconfigure(column, weight=1)
 
-        # Added: Connect the three GUI buttons and display operation results.
+        # Connect the three GUI buttons and display operation results.
         button_panel = tk.Frame(panel, bg="#F3F6FA")
         button_panel.grid(row=2, column=0, columnspan=4, sticky="w")
         for label, command in (("Add task", "ADD"), ("Edit selected", "EDIT"),
@@ -327,7 +306,7 @@ def display_dashboard(sorted_task_list, on_action=None):
         tk.Label(panel, textvariable=status_message, bg="#F3F6FA", fg="#334155",
                  font=("Arial", 10), anchor="w", wraplength=1000).grid(
                      row=3, column=0, columnspan=4, sticky="ew", pady=(10, 0))
-    # Added: Draw the initial task display.
+    # Draw the initial task display.
     refresh()
 
     close_button = tk.Button(
@@ -344,15 +323,11 @@ def display_dashboard(sorted_task_list, on_action=None):
         pady=10,
         cursor="hand2",
     )
-    """
-    close_button.pack(pady=(0, 22))
-    """
-    # Added: Reserve space for the close button before the task table fills the window.
+    # Reserve space for the close button before the task table fills the window.
     close_button.pack(side="bottom", before=content, pady=(0, 22))
 
     window.mainloop()
     return True
-
 
 if __name__ == "__main__":
     # Open an empty dashboard when this module is assessed independently.
