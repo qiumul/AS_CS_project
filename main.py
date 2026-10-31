@@ -1,6 +1,6 @@
-"""Add command-line input"""
+"""Manage tasks in the terminal and display the schedule in the dashboard."""
 
-# Added: import date to check calendar dates.
+# Import date to check calendar dates.
 from datetime import date
 
 from dashboard_display_module import display_dashboard
@@ -9,20 +9,19 @@ from reactive_task_list import ReactiveTaskList
 from task_manager import manage_tasks
 
 
-
 if __name__ == "__main__":
 
-    # 1. Initialize the reactive list (auto-loads on startup)
+    # Load previously saved tasks.
     my_tasks = ReactiveTaskList("my_tasks.json")
-    # 3. Calculate priority and sort (via priority_queue_engine)
+    # Calculate priority scores and sort the tasks.
     my_tasks = priority_queue_engine(my_tasks)
 
-    # Added: Keep accepting user commands until Exit is selected.
+    # Keep accepting user commands until Exit is selected.
     while True:
         print("\nDynamic Academic Planner")
         print("1. Add task\n2. Edit task\n3. Delete task\n4. View dashboard\n0. Exit")
         try:
-            # Added: repeat until a valid option is entered.
+            # Repeat until a valid option is entered.
             while True:
                 choice = input("Choose an option: ").strip()
                 if choice in ("0", "1", "2", "3", "4"):
@@ -31,14 +30,14 @@ if __name__ == "__main__":
             if choice == "0":
                 print("Goodbye.")
                 break
-            # Added: Open the existing GUI.
+            # Open the existing GUI.
             if choice == "4":
                 priority_queue_engine(my_tasks)
                 print("Starting dashboard...")
                 display_dashboard(my_tasks)
                 continue
 
-            # Added: Show task IDs so the user can identify an existing task.
+            # Show task IDs so the user can identify an existing task.
             existing = None
             if choice in ("2", "3"):
                 if not my_tasks:
@@ -46,7 +45,7 @@ if __name__ == "__main__":
                     continue
                 for task in my_tasks:
                     print(f"ID {task['id']}: {task['name']}")
-                # Added: check the ID format and existence before accepting it.
+                # Check the ID format and existence before accepting it.
                 while True:
                     value = input("Enter task ID: ").strip()
                     if not value.isdecimal():
@@ -58,46 +57,16 @@ if __name__ == "__main__":
                         break
                     print(f"Task ID {target_id} not found.")
 
-            # Added: delete the task with the selected ID.
+            # Delete the task with the selected ID.
             if choice == "3":
                 manage_tasks(my_tasks, "DELETE", {"id": target_id})
             else:
-                """
-                # 2. Simulated action: Add tasks (via task_manager)
-                for x in [
-                    {
-                        "id": 1,
-                        "name": "Physics Presentation",
-                        "deadline_date": "2026-11-25",
-                        "duration": 4,
-                        "difficulty": 5,
-                        "score": 0.0,
-                    },
-                    {
-                        "id": 2,
-                        "name": "Math Homework",
-                        "deadline_date": "2026-11-01",
-                        "duration": 2,
-                        "difficulty": 3,
-                        "score": 0.0,
-                    },
-                    {
-                        "id": 3,
-                        "name": "CS Project Overdue",
-                        "deadline_date": "2026-11-10",
-                        "duration": 5,
-                        "difficulty": 4,
-                        "score": 0.0,
-                    },
-                ]:
-                    manage_tasks(my_tasks, "ADD", x)  # Triggers auto-save
-                """
-                # Added: Keep the selected ID when editing; otherwise use the highest current ID plus one.
+                # Keep the selected ID when editing; otherwise use the highest current ID plus one.
                 data = {"id": existing["id"] if existing else max((t["id"] for t in my_tasks), default=0) + 1}
-                # Added: validate each field in its own loop so valid answers are kept.
+                # Validate each field in its own loop so valid answers are kept.
                 for field, label in (("name", "Task name"), ("deadline_date", "Deadline YYYY-MM-DD"),
                                      ("duration", "Duration in hours"), ("difficulty", "Difficulty 1-5")):
-                    # Added: require valid input for every field when adding or editing.
+                    # Require valid input for every field when adding or editing.
                     prompt = f"{label}: "
                     while True:
                         value = input(prompt).strip()
@@ -109,7 +78,7 @@ if __name__ == "__main__":
                             if len(value) != 10 or value[4] != "-" or value[7] != "-":
                                 print("Use YYYY-MM-DD for the deadline.")
                                 continue
-                            # Added: calendar validation.
+                            # Calendar validation.
                             try:
                                 date.fromisoformat(value)
                             except ValueError:
@@ -131,13 +100,13 @@ if __name__ == "__main__":
                         data[field] = value
                         break
 
-                # Added: Pass validated input to the task management module.
+                # Pass validated input to the task management module.
                 manage_tasks(my_tasks, "EDIT" if existing else "ADD", data)
 
-            # Added: Recalculate scores after a successful change; the original list saves automatically.
+            # Recalculate scores after a successful change; the task list saves automatically.
             priority_queue_engine(my_tasks)
             print("Task list updated and priorities recalculated.")
-        # Added: exit cleanly when terminal input ends or is interrupted.
+        # Exit cleanly when terminal input ends or is interrupted.
         except (EOFError, KeyboardInterrupt):
             print("\nGoodbye.")
             break

@@ -191,10 +191,7 @@ def display_dashboard(sorted_task_list):
         pady=10,
         cursor="hand2",
     )
-    """
-    close_button.pack(pady=(0, 22))
-    """
-    # Added: reserve space for the close button before the task table fills the window.
+    # Reserve space for the close button before the task table fills the window.
     close_button.pack(side="bottom", before=content, pady=(0, 22))
 
     window.mainloop()
