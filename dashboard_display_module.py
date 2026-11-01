@@ -225,11 +225,11 @@ def display_dashboard(sorted_task_list, on_action=None):
                 status = ""
                 row_tag = "standard"
 
-                # Show overdue tasks separately; tasks due within three days are urgent.
+                # Show overdue tasks separately; tasks due today are urgent.
                 if task["deadline_days"] < 0:
                     status = "● OVERDUE"
                     row_tag = "urgent"
-                elif task["deadline_days"] <= 3:
+                elif task["deadline_days"] == 0:
                     status = "● URGENT"
                     row_tag = "urgent"
 
