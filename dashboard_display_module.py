@@ -330,5 +330,67 @@ def display_dashboard(sorted_task_list, on_action=None):
     return True
 
 if __name__ == "__main__":
-    # Open an empty dashboard when this module is assessed independently.
-    display_dashboard([])
+    from datetime import date, timedelta
+
+    # Sample data for testing the dashboard without the main program.
+    sample_tasks = [
+        {
+            "id": 1,
+            "name": "A1-CS Project",
+            "deadline_date": (date.today() + timedelta(days=1)).isoformat(),
+            "deadline_days": 1,
+            "duration": 4.0,
+            "difficulty": 5,
+            "score": 215.00,
+        }
+    ]
+
+    # Simulate task operations locally; scores are sample display values.
+    def dummy_action(command, data):
+        print(f"\n[TEST CALLBACK] Command: {command} | Data: {data}")
+
+        # Deleting a task does not require checking the input fields.
+        if command == "DELETE":
+            sample_tasks[:] = [task for task in sample_tasks if task["id"] != data["id"]]
+            return True, "Task deleted successfully!", None
+
+        invalid_field = "name"
+        try:
+            name = data["name"].strip()
+            if not name:
+                raise ValueError("Enter a task name.")
+            invalid_field = "deadline_date"
+            deadline = date.fromisoformat(data["deadline_date"])
+            invalid_field = "duration"
+            duration = float(data["duration"])
+            if not 0 < duration <= 100:
+                raise ValueError("Duration must be greater than 0 and at most 100 hours.")
+            invalid_field = "difficulty"
+            difficulty = int(data["difficulty"])
+            if not 1 <= difficulty <= 5:
+                raise ValueError("Difficulty must be a whole number from 1 to 5.")
+        except ValueError as error:
+            return False, f"Invalid input: {error}", invalid_field
+
+        # Use the same date field as the dashboard's existing input form.
+        values = {
+            "name": name,
+            "deadline_date": deadline.isoformat(),
+            "deadline_days": (deadline - date.today()).days,
+            "duration": duration,
+            "difficulty": difficulty,
+        }
+        if command == "EDIT":
+            for task in sample_tasks:
+                if task["id"] == data["id"]:
+                    task.update(values)
+            return True, "Task updated successfully!", None
+        elif command == "ADD":
+            new_id = max((task["id"] for task in sample_tasks), default=0) + 1
+            sample_tasks.append({"id": new_id, **values, "score": 150.00})
+            return True, "Task added successfully!", None
+
+        return False, "Invalid command.", "name"
+
+    # Run the dashboard with the local test callback.
+    display_dashboard(sample_tasks, on_action=dummy_action)
