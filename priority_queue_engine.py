@@ -63,9 +63,9 @@ def priority_queue_engine(task_list):
 if __name__ == "__main__":
     # Sample tasks for testing.
     task_list = [
-        {"id": 1, "name": "Physics Presentation", "deadline_date": "2026-10-25", "duration": 4, "difficulty": 5, "score": 0.0},
-        {"id": 2, "name": "Math Homework", "deadline_date": "2026-11-01", "duration": 2, "difficulty": 3, "score": 0.0},
-        {"id": 3, "name": "CS Project Overdue", "deadline_date": "2026-10-10", "duration": 5, "difficulty": 4, "score": 0.0}
+        {"id": 1, "name": "Physics Project", "deadline_date": "2026-11-11", "duration": 4, "difficulty": 6, "score": 0.0},
+        {"id": 2, "name": "Math Homework", "deadline_date": "2026-11-02", "duration": 2, "difficulty": 3, "score": 0.0},
+        {"id": 3, "name": "English Homework", "deadline_date": "2026-11-06", "duration": 1, "difficulty": 1, "score": 0.0}
     ]
 
     # Copy each task to preserve the original scores and order for comparison.
